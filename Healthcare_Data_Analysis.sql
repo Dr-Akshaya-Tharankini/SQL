@@ -1,16 +1,10 @@
--- @Author - Dr.Akshaya Tharankini A
+-- @Author: Dr. Akshaya Tharankini A
 
 -- DATA ANALYSIS USING SQL ON HealthCare Database 
 	-- This dataset is not based on real facts, please don't consider the result sets to be actual and utilize it for any purpose.
     
--- Creating Database named Healthcare.
-CREATE DATABASE Healthcare;
-
--- Selecting Healthcare database to query.
-USE Healthcare;
-
 -- Viewing Data on Database
-SELECT * FROM healthcare;
+SELECT * FROM Healthcare;
 
 -- Describing characteristics of table.
 DESC Healthcare;
@@ -19,17 +13,17 @@ DESC Healthcare;
 SELECT COUNT(*) FROM Healthcare;		
 
 -- 2. Finding maximum age of patient admitted.
-select max(age) as Maximum_Age from Healthcare;
+SELECT MAX(age) as Maximum_Age FROM Healthcare;
 
 -- 3. Finding Average age of hospitalized patients.
-select round(avg(age),0) as Average_Age from Healthcare;	
+SELECT ROUND(AVG(age),0) as Average_Age FROM Healthcare;	
 
 -- 4. Calculating Patients Hospitalized Age-wise from Maximum to Minimum
 SELECT AGE, COUNT(AGE) AS Total
 FROM Healthcare
 GROUP BY age
 ORDER BY AGE DESC;
-	-- Findings : The output will display a list of unique ages present in the "Healthcare" table along with the count of occurrences for each age, sorted from oldest 	to youngest.
+	 -- Findings : The output will display a list of unique ages present in the "Healthcare" table along with the count of occurrences for each age, sorted from oldest to youngest
     
     
 -- 5. Calculating Maximum Count of patients on basis of total patients hospitalized with respect to age.
@@ -83,14 +77,14 @@ GROUP BY Medical_Condition;
     
 
 -- 12. Finding Billing Amount of patients admitted and number of days spent in respective hospital.
-SELECT Medical_Condition, Name, Hospital, DATEDIFF(Discharge_date,Date_of_Admission) as Number_of_Days, 
+SELECT Medical_Condition, Name, Hospital, DATEDIFF(Discharge_date,Date_of_Admission) AS Number_of_Days, 
 SUM(ROUND(Billing_Amount,2)) OVER(Partition by Hospital ORDER BY Hospital DESC) AS Total_Amount
 FROM Healthcare
 ORDER BY Medical_Condition;
  
  
 -- 13. Finding Total number of days sepnt by patient in an hospital for given medical condition
-SELECT Name, Medical_Condition, ROUND(Billing_Amount,2) as Billing_Amount, Hospital, DATEDIFF(Discharge_Date, Date_of_Admission) as Total_Hospitalized_days
+SELECT Name, Medical_Condition, ROUND(Billing_Amount,2) AS Billing_Amount, Hospital, DATEDIFF(Discharge_Date, Date_of_Admission) AS Total_Hospitalized_days
 FROM Healthcare;
 	-- Findings : This query retrieves a dataset showing the names of patients, their respective medical conditions, billed amounts (rounded to two decimal places), the hospitals they visited, and the duration of their hospital stay in days. Insights gleaned include: 
 		-- Individual Patient Details: It presents a comprehensive view of patients, their medical conditions, billed amounts, and hospitals involved, aiding in understanding the scope of medical services availed by patients.
@@ -100,13 +94,13 @@ FROM Healthcare;
 
 
 -- 14. Finding Hospitals which were successful in discharging patients after having test results as 'Normal' with count of days taken to get results to Normal
-SELECT Medical_Condition, Hospital, DATEDIFF(Discharge_Date, Date_of_Admission) as Total_Hospitalized_days,Test_results
+SELECT Medical_Condition, Hospital, DATEDIFF(Discharge_Date, Date_of_Admission) AS Total_Hospitalized_days,Test_results
 FROM Healthcare
 WHERE Test_results LIKE 'Normal'
 ORDER BY Medical_Condition, Hospital;
 
 -- 15. Calculate number of blood types of patients which lies betwwen age 20 to 45
-SELECT Age, Blood_type, COUNT(Blood_Type) as Count_Blood_Type
+SELECT Age, Blood_type, COUNT(Blood_Type) AS Count_Blood_Type
 FROM Healthcare
 WHERE AGE BETWEEN 20 AND 45
 GROUP BY 1,2
@@ -126,8 +120,8 @@ DELIMITER $$
 
 CREATE PROCEDURE Blood_Matcher(IN Name_of_patient VARCHAR(200))
 BEGIN 
-SELECT D.Name as Donor_name, D.Age as Donor_Age, D.Blood_Type as Donors_Blood_type,D.Hospital as Donors_Hospital, 
-R.Name as Reciever_name, R.Age as Reciever_Age, R.Blood_Type as Recievers_Blood_type, R.Hospital as Receivers_hospital
+SELECT D.Name AS Donor_name, D.Age AS Donor_Age, D.Blood_Type AS Donors_Blood_type,D.Hospital AS Donors_Hospital, 
+R.Name AS Reciever_name, R.Age AS Reciever_Age, R.Blood_Type AS Recievers_Blood_type, R.Hospital AS Receivers_hospital
 FROM Healthcare D 
 INNER JOIN Healthcare R ON (D.Blood_type = 'O-' AND R.Blood_type = 'AB+') AND ((D.Hospital = R.Hospital) OR (D.Hospital != R.Hospital))
 WHERE (R.Name REGEXP Name_of_patient) AND (D.AGE BETWEEN 20 AND 40);
